@@ -65,11 +65,11 @@ Acesse o dashboard no seu navegador em: `http://localhost:5001`.
 
 | Variável | Valor Padrão | Descrição |
 | --- | --- | --- |
-| `ORA_USER` | `SANKHYA` | Usuário da base Oracle |
-| `ORA_PASS` | `laranja` | Senha da base Oracle |
-| `ORA_DSN` | `CLOUD.MULTFER.COM.BR:21159/PROD` | DSN da conexão Oracle |
+| `ORA_USER` | `your_user` | Usuário da base Oracle |
+| `ORA_PASS` | `your_password` | Senha da base Oracle |
+| `ORA_DSN` | `your_dsn` | DSN da conexão Oracle |
 | `SIEMENS_API_URL` | `https://api.pos.siemens.com/qua/inventory/create_record` | Endpoint de Inventário Siemens |
-| `SIEMENS_API_TOKEN` | `4rwtKHdH44oa1K5Zs9kXa20NLEco8FQ95AtbJngh` | Header `x-api-key` |
-| `SIEMENS_DISTRIBUTOR_SENDER_ID` | `40212903` | Header `distributor_sender_id` |
+| `SIEMENS_API_TOKEN` | `your_token` | Header `x-api-key` |
+| `SIEMENS_DISTRIBUTOR_SENDER_ID` | `your_id` | Header `distributor_sender_id` |
 | `BATCH_SIZE` | `1000` | Limite de registros por batch |
 | `FLASK_PORT` | `5001` | Porta do servidor Web |
