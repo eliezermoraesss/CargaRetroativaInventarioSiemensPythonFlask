@@ -2,6 +2,8 @@
 
 Sistema automatizado com dashboard Web interativo para realização de carga retroativa e contínua de **Inventário/Estoque** para a API Siemens Point of Sales (`/qua/inventory/create_record`).
 
+![Dashboard da Aplicação](assets/img/siemens-inventario.gif)
+
 ## 📌 Funcionalidades
 
 - **Envio em Batches de no máximo 1.000 registros**: Otimizado para alta performance e estabilidade da API Siemens.
