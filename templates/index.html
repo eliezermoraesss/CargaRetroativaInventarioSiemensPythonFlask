@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Carga Retroativa de Inventário Siemens — Dashboard</title>
+  <meta name="description" content="Dashboard para monitorar e controlar o backfill de inventário na API Siemens Point of Sales." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+
+  <!-- ── Header ──────────────────────────────────────────────────── -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo-group">
+        <div class="logo-icon">
+          <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="40" height="40" rx="10" fill="url(#lg1)"/>
+            <path d="M10 20 L20 10 L30 20 L20 30 Z" fill="white" opacity="0.9"/>
+            <path d="M16 20 L20 16 L24 20 L20 24 Z" fill="url(#lg1)"/>
+            <defs>
+              <linearGradient id="lg1" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#00c6ad"/>
+                <stop offset="100%" stop-color="#007a72"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <div>
+          <h1 class="header-title">Carga Retroativa — Inventário</h1>
+          <span class="header-sub">Siemens Point of Sales — Inventory API Backfill</span>
+        </div>
+      </div>
+      <div class="header-status-pill" id="globalStatusPill">
+        <span class="pill-dot" id="pillDot"></span>
+        <span id="pillLabel">Aguardando</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── Main ────────────────────────────────────────────────────── -->
+  <main class="main">
+
+    <!-- Metric cards -->
+    <section class="cards-grid" aria-label="Métricas">
+      <div class="card" id="cardTotal">
+        <div class="card-icon card-icon--blue">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 17H5a2 2 0 0 0-2 2v1h18v-1a2 2 0 0 0-2-2h-4"/><path d="M12 3v10"/><path d="M9 10l3 3 3-3"/></svg>
+        </div>
+        <div class="card-body">
+          <span class="card-label">Total de Registros</span>
+          <span class="card-value" id="metricTotal">—</span>
+        </div>
+      </div>
+      <div class="card" id="cardProcessed">
+        <div class="card-icon card-icon--teal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <div class="card-body">
+          <span class="card-label">Processados</span>
+          <span class="card-value" id="metricProcessed">—</span>
+        </div>
+      </div>
+      <div class="card" id="cardSuccess">
+        <div class="card-icon card-icon--green">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </div>
+        <div class="card-body">
+          <span class="card-label">Enviados com Sucesso</span>
+          <span class="card-value" id="metricSuccess">—</span>
+        </div>
+      </div>
+      <div class="card" id="cardErrors">
+        <div class="card-icon card-icon--red">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <div class="card-body">
+          <span class="card-label">Erros</span>
+          <span class="card-value" id="metricErrors">—</span>
+        </div>
+      </div>
+      <div class="card" id="cardBatches">
+        <div class="card-icon card-icon--purple">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg>
+        </div>
+        <div class="card-body">
+          <span class="card-label">Batches</span>
+          <span class="card-value" id="metricBatches">—</span>
+        </div>
+      </div>
+      <div class="card" id="cardElapsed">
+        <div class="card-icon card-icon--orange">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <div class="card-body">
+          <span class="card-label">Tempo Decorrido</span>
+          <span class="card-value" id="metricElapsed">—</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Progress bar -->
+    <section class="progress-section glass-card" aria-label="Progresso">
+      <div class="progress-header">
+        <span class="progress-title">Progresso da Carga de Inventário</span>
+        <span class="progress-pct" id="progressPct">0%</span>
+      </div>
+      <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progressTrack">
+        <div class="progress-bar" id="progressBar"></div>
+        <div class="progress-glow" id="progressGlow"></div>
+      </div>
+      <div class="progress-labels">
+        <span id="progressDetails">Aguardando início…</span>
+        <span id="progressEta"></span>
+      </div>
+    </section>
+
+    <!-- Control buttons -->
+    <section class="controls glass-card" aria-label="Controles">
+      <div class="controls-inner">
+        <div class="date-group">
+          <div>
+            <label for="startDate">Período inicial (AD_DHINC)</label>
+            <input type="date" id="startDate" />
+          </div>
+          <div>
+            <label for="endDate">Período final (AD_DHINC)</label>
+            <input type="date" id="endDate" />
+          </div>
+        </div>
+        <div class="btn-group">
+          <button class="btn btn--primary" id="btnStart" onclick="startProcess(false)">
+            <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Iniciar Carga
+          </button>
+          <button class="btn btn--outline" id="btnDryRun" onclick="startProcess(true)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Dry Run (Simular)
+          </button>
+        </div>
+        <button class="btn btn--danger" id="btnStop" onclick="stopProcess()" disabled>
+          <svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12"/></svg>
+          Parar
+        </button>
+      </div>
+    </section>
+
+    <!-- Log panel -->
+    <section class="log-section glass-card" aria-label="Log em tempo real">
+      <div class="log-header">
+        <span class="section-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          Log em Tempo Real
+        </span>
+        <button class="btn-icon" id="btnClearLog" onclick="clearLog()" title="Limpar log">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+        </button>
+      </div>
+      <div class="log-body" id="logBody">
+        <div class="log-empty">Sem eventos ainda. Inicie a carga para ver o log aqui.</div>
+      </div>
+    </section>
+
+    <!-- Failed batches -->
+    <section class="errors-section glass-card" id="errorsSection" style="display:none" aria-label="Batches com erro">
+      <div class="log-header">
+        <span class="section-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Batches com Erro
+        </span>
+      </div>
+      <div class="table-wrapper">
+        <table class="err-table">
+          <thead>
+            <tr><th>Batch #</th><th>Registros</th><th>Erro</th></tr>
+          </thead>
+          <tbody id="errTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ── Footer ──────────────────────────────────────────────────── -->
+  <footer class="footer">
+    <span>Carga Retroativa Inventário Siemens POS — Multfer &copy; 2026</span>
+    <span class="footer-version" id="footerConn">● Conectando SSE…</span>
+  </footer>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
